@@ -71,7 +71,7 @@
     <Compile Include="Assets\Code\For button\GameRestartOrEnd.cs" />
     <Compile Include="Assets\Code\For button\GameResume.cs" />
     <Compile Include="Assets\Code\For button\GameStartOrEnd.cs" />
-    <Compile Include="Assets\Code\GameProcess.cs" />
+    <Compile Include="Assets\Code\Game.cs" />
     <Compile Include="Assets\Code\Player\Player.cs" />
     <Compile Include="Assets\Code\Player\Rotation.cs" />
     <Compile Include="Assets\Code\Player\Shoot.cs" />

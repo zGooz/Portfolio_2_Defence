@@ -8,36 +8,67 @@ public class Shoot : MonoBehaviour
 
     private const int TIME_BETWEEN_SHOTS = 90;
 
-    private Bullet _bulletComponent;
-    private Player _playerComponent;
-    private int _timeBetweenShots = TIME_BETWEEN_SHOTS;
+    private Bullet bullet;
+    private Player player;
+    private int reload = TIME_BETWEEN_SHOTS;
 
     private void Awake()
     {
-        _bulletComponent = _bulletPrefab.GetComponent<Bullet>();
-        _playerComponent = GetComponent<Player>();
+        bullet = _bulletPrefab.GetComponent<Bullet>();
+        player = GetComponent<Player>();
     }
     
     private void Update()
     {
-        if (_playerComponent.ManagerStateData.GameState == GameProcess.GAME)
+        if (! StateIsInGame())
         {
-            if (_playerComponent.State != Player.DEAD)
+            return;
+        }
+
+        if (IsPlayerNotDead())
+        {
+            WaitPossibilityForShoot();
+
+            if (Input.GetMouseButtonDown(0))
             {
-                _timeBetweenShots = Mathf.Max(--_timeBetweenShots, 0);
-
-                if (Input.GetMouseButtonDown(0))
+                if (IsCanShoot())
                 {
-                    if (_timeBetweenShots == 0)
-                    {
-                        var bullet = Instantiate(_bulletPrefab, this.transform.position, Quaternion.identity);
-
-                        Destroy(bullet.gameObject, _playerComponent.Radius / _bulletComponent.Speed);
-
-                        _timeBetweenShots = TIME_BETWEEN_SHOTS;
-                    }
+                    CreateBullet();
+                    RunPossibility();
                 }
             }
         }
+    }
+
+    private bool StateIsInGame()
+    {
+        return player.ManagerStateData.GameState == Game.GAME;
+    }
+
+    private bool IsPlayerNotDead()
+    {
+        return player.State != Player.DEAD;
+    }
+
+    private void WaitPossibilityForShoot()
+    {
+        reload = Mathf.Max(--reload, 0);
+    }
+
+    private bool IsCanShoot()
+    {
+        return reload == 0;
+    }
+
+    private void RunPossibility()
+    {
+        reload = TIME_BETWEEN_SHOTS;
+    }
+
+    private void CreateBullet()
+    {
+        var bullet = Instantiate(_bulletPrefab, this.transform.position, Quaternion.identity);
+
+        Destroy(bullet.gameObject, player.Radius / this.bullet.Speed);
     }
 }

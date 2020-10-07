@@ -9,35 +9,48 @@ public class Bullet : MonoBehaviour
 {
     // [SerializeField] private Camera _camera; // ??? Not set field. ???
 
-    private Camera _camera;
-    private Vector3 _screenMouse;
-    private Vector3 _worldMouse;
+    private Camera cameraObject;
+    private Vector3 mouseScreenPosition;
+    private Vector3 mouseWorldPosition;
+    private Vector3 direction;
 
     public float Speed { get; } = 7.0f;
 
     private void Awake()
     {
-        _camera = FindObjectOfType<Camera>();
+        cameraObject = FindObjectOfType<Camera>();
 
-        _screenMouse = Input.mousePosition;
-        _worldMouse = _camera.ScreenToWorldPoint(_screenMouse);
-        _worldMouse.Set(_worldMouse.x, _worldMouse.y, 0);
-        _worldMouse.Normalize();
+        mouseScreenPosition = Input.mousePosition;
+        mouseWorldPosition = cameraObject.ScreenToWorldPoint(mouseScreenPosition);
+        mouseWorldPosition.Set(mouseWorldPosition.x, mouseWorldPosition.y, 0);
+        mouseWorldPosition.Normalize();
+
+        direction = mouseWorldPosition * Speed * Time.deltaTime;
     }
 
     private void Update()
     {
-        this.transform.Translate(_worldMouse * Speed * Time.deltaTime);
+        Move();
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        GameObject obj = collision.gameObject;
+        GameObject other = collision.gameObject;
 
-        if (obj.TryGetComponent<Bot>(out Bot b))
+        if (IsBot(other))
         {
-            Destroy(obj);
+            Destroy(other);
             Destroy(this.gameObject);
         }
+    }
+
+    private void Move()
+    {
+        this.transform.Translate(direction);
+    }
+
+    private bool IsBot(GameObject instance)
+    {
+        return instance.TryGetComponent<Bot>(out Bot b);
     }
 }

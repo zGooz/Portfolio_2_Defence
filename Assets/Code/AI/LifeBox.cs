@@ -4,35 +4,40 @@ using UnityEngine;
 
 public class LifeBox : MonoBehaviour
 {
-    [SerializeField] private GameObject[] _sprites;
-    [SerializeField] private GameObject _player;
+    [SerializeField] private GameObject[] lives;
+    [SerializeField] private GameObject playerObject;
 
-    private int _length;
-    private Player _playerComponent;
+    private int liveAmount;
+    private Player player;
     
     private void Awake()
     {
-        _playerComponent = _player.GetComponent<Player>();
-        _length = _playerComponent.Lives;
+        player = playerObject.GetComponent<Player>();
+        liveAmount = player.Lives;
     }
 
     private void OnEnable() 
     {
-        _playerComponent.HasDamage += OnPanchToPlayer;
+        player.HasDamage += OnPanchToPlayer;
     }
 
     private void OnDisable() 
     {
-        _playerComponent.HasDamage -= OnPanchToPlayer; 
+        player.HasDamage -= OnPanchToPlayer; 
     }
 
     private void OnPanchToPlayer()
     {
-        if (_length > 0)
+        if (IsPlayerLive())
         {
-            int last = _length - 1;
-            Destroy(_sprites[last]);
-            _length--;
+            int lastIndex = liveAmount - 1;
+            Destroy(lives[lastIndex]);
+            liveAmount -= 1;
         }
+    }
+
+    private bool IsPlayerLive()
+    {
+        return liveAmount > 0;
     }
 }

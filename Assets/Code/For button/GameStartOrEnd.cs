@@ -5,40 +5,40 @@ using UnityEngine.Events;
 
 public class GameStartOrEnd : MonoBehaviour
 {
-    [SerializeField] GameObject _buttonRuner;
-    [SerializeField] GameObject _buttonClosed;
+    [SerializeField] GameObject buttonGameStart;
+    [SerializeField] GameObject buttonGameExit;
 
-    private ButtonClick _clickToRunButton;
-    private ButtonClick _clickToCloseButton;
+    private ButtonClick clickToStartButton;
+    private ButtonClick clickToExitButton;
 
-    public event UnityAction GameRun;
-    public event UnityAction GameDone;
+    public event UnityAction StartGame;
+    public event UnityAction ExitGame;
 
     private void Awake()
     {
-        _clickToRunButton = _buttonRuner.GetComponent<ButtonClick>();
-        _clickToCloseButton = _buttonClosed.GetComponent<ButtonClick>();
+        clickToStartButton = buttonGameStart.GetComponent<ButtonClick>();
+        clickToExitButton = buttonGameExit.GetComponent<ButtonClick>();
     }
 
     private void OnEnable()
     {
-        _clickToRunButton.Click += OnGameRun;
-        _clickToCloseButton.Click += OnGameDone;
+        clickToStartButton.Click += OnStartGame;
+        clickToExitButton.Click += OnExitGame;
     }
 
     private void OnDisable()
     {
-        _clickToRunButton.Click -= OnGameRun;
-        _clickToCloseButton.Click -= OnGameDone;
+        clickToStartButton.Click -= OnStartGame;
+        clickToExitButton.Click -= OnExitGame;
     }
 
-    private void OnGameRun()
+    private void OnStartGame()
     {
-        GameRun?.Invoke();
+        StartGame?.Invoke();
     }
 
-    private void OnGameDone()
+    private void OnExitGame()
     {
-        GameDone?.Invoke();
+        ExitGame?.Invoke();
     }
 }

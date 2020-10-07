@@ -4,26 +4,43 @@ using UnityEngine;
 
 public class Rotation : MonoBehaviour
 {
-    [SerializeField] private Camera _camera;
+    [SerializeField] private Camera cameraObject;
 
-    private Player _playerComponent;
+    private Player player;
 
     private void Awake()
     {
-        _playerComponent = GetComponent<Player>();
+        player = GetComponent<Player>();
     }
 
     private void Update()
     {
-        if (_playerComponent.ManagerStateData.GameState == GameProcess.GAME)
+        if (! StateIsInGame())
         {
-            if (_playerComponent.State != Player.DEAD)
-            {
-                Vector3 screenMouse = Input.mousePosition;
-                Vector3 worldMouse = _camera.ScreenToWorldPoint(screenMouse);
-
-                transform.LookAt(new Vector3(0, 0, 0), worldMouse);
-            }
+            return;
         }
+
+        if (IsPlayerNotDead())
+        {
+            LookToMouse();
+        }
+    }
+
+    private bool StateIsInGame()
+    {
+        return player.ManagerStateData.GameState == Game.GAME;
+    }
+
+    private bool IsPlayerNotDead()
+    {
+        return player.State != Player.DEAD;
+    }
+
+    private void LookToMouse()
+    {
+        Vector3 screenMouse = Input.mousePosition;
+        Vector3 worldMouse = cameraObject.ScreenToWorldPoint(screenMouse);
+
+        transform.LookAt(new Vector3(0, 0, 0), worldMouse);
     }
 }

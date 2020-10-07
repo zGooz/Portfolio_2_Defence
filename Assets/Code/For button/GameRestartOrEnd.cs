@@ -5,40 +5,40 @@ using UnityEngine.Events;
 
 public class GameRestartOrEnd : MonoBehaviour
 {
-    [SerializeField] GameObject _buttonRestarter;
-    [SerializeField] GameObject _buttonClosed;
+    [SerializeField] GameObject buttonGameRestart;
+    [SerializeField] GameObject buttonGameExit;
 
-    private ButtonClick _clickToRestartButton;
-    private ButtonClick _clickToCloseButton;
+    private ButtonClick clickToRestartButton;
+    private ButtonClick clickToExitButton;
 
-    public event UnityAction GameRestart;
-    public event UnityAction GameDone;
+    public event UnityAction RestartGame;
+    public event UnityAction ExitGame;
 
     private void Awake()
     {
-        _clickToRestartButton = _buttonRestarter.GetComponent<ButtonClick>();
-        _clickToCloseButton = _buttonClosed.GetComponent<ButtonClick>();
+        clickToRestartButton = buttonGameRestart.GetComponent<ButtonClick>();
+        clickToExitButton = buttonGameExit.GetComponent<ButtonClick>();
     }
 
     private void OnEnable()
     {
-        _clickToRestartButton.Click += OnGameRun;
-        _clickToCloseButton.Click += OnGameDone;
+        clickToRestartButton.Click += OnRestartGame;
+        clickToExitButton.Click += OnExitGame;
     }
 
     private void OnDisable()
     {
-        _clickToRestartButton.Click -= OnGameRun;
-        _clickToCloseButton.Click -= OnGameDone;
+        clickToRestartButton.Click -= OnRestartGame;
+        clickToExitButton.Click -= OnExitGame;
     }
 
-    private void OnGameRun()
+    private void OnRestartGame()
     {
-        GameRestart?.Invoke();
+        RestartGame?.Invoke();
     }
 
-    private void OnGameDone()
+    private void OnExitGame()
     {
-        GameDone?.Invoke();
+        ExitGame?.Invoke();
     }
 }

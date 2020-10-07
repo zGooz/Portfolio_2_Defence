@@ -6,13 +6,16 @@ using UnityEngine.Events;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _main;
-    [SerializeField] private GameObject _bot;
-    [SerializeField] private GameObject _player;
+    [SerializeField] private GameObject main;
+    [SerializeField] private GameObject bot;
+    [SerializeField] private GameObject playerObject;
 
-    private GameProcess _mainComponent;
-    private Player _playerComponent;
-    private int _botAmount = 1;
+    private Game game;
+    private Player player;
+
+    private int respownCounter = 1;
+    private int currentWave = 1;
+    private float reloadBetweenRespawn = 5.0f;
 
     private const int LAST_WAVE = 10;
 
@@ -25,59 +28,84 @@ public class Spawner : MonoBehaviour
 
     private void Awake()
     {
-        _mainComponent = _main.GetComponent<GameProcess>();
-        _playerComponent = _player.GetComponent<Player>();
-    }
-
-    private float _reload = 5.0f;
-
-    private void OnEnable() 
-    { 
-        _mainComponent.GameStart += OnGameStart; 
-    }
-
-    private void OnDisable() 
-    { 
-        _mainComponent.GameStart -= OnGameStart; 
-    }
-
-    private void OnGameStart() 
-    { 
-        StartCoroutine(Spawn()); 
+        game = main.GetComponent<Game>();
+        player = playerObject.GetComponent<Player>();
     }
 
     IEnumerator Spawn()
     {
-        if (_playerComponent.State == Player.DEAD) 
+        if (IsPlayerDead()) 
         { 
             yield break; 
         }
 
-        if (_botAmount == LAST_WAVE)
+        if (IsLastWave())
         {
             OnWinner();
             yield break;
         }
 
-        for (int i = 0; i < _botAmount; i++)
+        MakeBots();
+
+        yield return new WaitForSeconds(reloadBetweenRespawn);
+
+        StartCoroutine(Spawn());
+    }
+
+    private bool IsPlayerDead()
+    {
+        return player.State == Player.DEAD;
+    }
+
+    private bool IsLastWave()
+    {
+        return currentWave == LAST_WAVE;
+    }
+
+    private void MakeBots()
+    {
+        for (int i = 0; i < respownCounter; i++)
         {
             float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+            Vector3 finish = GetRespawnPosition(angle);
 
-            Vector3 statr = _player.transform.position;
-            float x = statr.x + Mathf.Cos(angle) * _playerComponent.Radius;
-            float y = statr.y + Mathf.Sin(angle) * _playerComponent.Radius;
-
-            Vector3 finish = new Vector3(0, 0, 0);
-            finish.Set(x, y, -10);
-
-            var bot = Instantiate(_bot, finish, Quaternion.identity);
-            bot.transform.Rotate(new Vector3(0, 0, angle * Mathf.Rad2Deg + 90));
+            CreateBot(finish, angle);
         }
 
-        _botAmount += 1;
+        respownCounter += 1;
+        currentWave += 1;
+    }
 
-        yield return new WaitForSeconds(_reload);
+    private Vector3 GetRespawnPosition(float angle)
+    {
+        Vector3 statr = playerObject.transform.position;
+        float x = statr.x + Mathf.Cos(angle) * player.Radius;
+        float y = statr.y + Mathf.Sin(angle) * player.Radius;
 
+        Vector3 finish = new Vector3(0, 0, 0);
+        finish.Set(x, y, -10);
+
+        return finish;
+    }
+
+    private void CreateBot(Vector3 finish, float angle)
+    {
+        var instance = Instantiate(bot, finish, Quaternion.identity);
+        instance.transform.Rotate(new Vector3(0, 0, angle * Mathf.Rad2Deg + 90));
+    }
+
+    private void OnEnable()
+    {
+        game.GameStart += OnGameStart;
+    }
+
+    private void OnDisable()
+    {
+        game.GameStart -= OnGameStart;
+    }
+
+    private void OnGameStart()
+    {
         StartCoroutine(Spawn());
     }
 }

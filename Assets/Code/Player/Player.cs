@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject _gameManager;
+    [SerializeField] private GameObject main;
 
     public const int LIVE = 0;
     public const int DEAD = 1;
@@ -16,16 +16,16 @@ public class Player : MonoBehaviour
     public float Radius { get; } = 40.0f;
 
     public int _liveAmount = 5;
-    private GameProcess _managerGameProcess;
+    private Game game;
 
-    public GameProcess ManagerStateData => _managerGameProcess;
+    public Game ManagerStateData => game;
 
     public event UnityAction Dead;
     public event UnityAction HasDamage;
 
     private void Awake()
     {
-        _managerGameProcess = _gameManager.GetComponent<GameProcess>();
+        game = main.GetComponent<Game>();
     }
 
     public void OnDead()
@@ -40,14 +40,13 @@ public class Player : MonoBehaviour
 
     public int Lives
     {
-        get => _liveAmount;
         set
         {
-            if (State != DEAD)
+            if (IsLive())
             {
                 _liveAmount = value;
 
-                if (_liveAmount == 0)
+                if (IsCanNotLive())
                 {
                     State = DEAD;
                     OnDead();
@@ -56,5 +55,16 @@ public class Player : MonoBehaviour
                 OnHasDamage();
             }
         }
+        get => _liveAmount;
+    }
+
+    private bool IsLive()
+    {
+        return State != DEAD;
+    }
+
+    private bool IsCanNotLive()
+    {
+        return _liveAmount == 0;
     }
 }

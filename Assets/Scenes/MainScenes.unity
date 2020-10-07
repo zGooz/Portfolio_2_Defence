@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 866fb98e93df375449dd932eac1ef5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameManager: {fileID: 1003489722}
+  main: {fileID: 1003489722}
   _liveAmount: 5
 --- !u!114 &111448876
 MonoBehaviour:
@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb88cd258fb2192489f8ef52d74c483f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _camera: {fileID: 519420031}
+  cameraObject: {fileID: 519420031}
 --- !u!1 &319117586
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,13 +410,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c2fe36143df61b41997063efa71e385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sprites:
+  lives:
   - {fileID: 638250702}
   - {fileID: 1921483248}
   - {fileID: 1285459018}
   - {fileID: 1416959017}
   - {fileID: 366998255}
-  _player: {fileID: 111448870}
+  playerObject: {fileID: 111448870}
 --- !u!4 &426026940
 Transform:
   m_ObjectHideFlags: 0
@@ -643,9 +643,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4df2e5dacb86a124282c0cd6d140a89e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _main: {fileID: 1003489722}
-  _bot: {fileID: 9025399655846401500, guid: 48a855d72f559874b82870872c64ccc9, type: 3}
-  _player: {fileID: 111448870}
+  main: {fileID: 1003489722}
+  bot: {fileID: 9025399655846401500, guid: 48a855d72f559874b82870872c64ccc9, type: 3}
+  playerObject: {fileID: 111448870}
 --- !u!1 &1003489722
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,19 +692,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvas: {fileID: 1106274156}
-  _player: {fileID: 111448870}
-  _spawn: {fileID: 836076442}
-  _menuGameStarterOrEnderPrefab: {fileID: 5182759037247485201, guid: f2900828146e68c45becd7dabf31fda4,
+  playerObject: {fileID: 111448870}
+  respawner: {fileID: 836076442}
+  gameStarterPrefab: {fileID: 5182759037247485201, guid: f2900828146e68c45becd7dabf31fda4,
     type: 3}
-  _menuGameResumerPrefab: {fileID: 3964069662587948830, guid: 6c5a9241c4db3f6409ede966aa3d3521,
+  gameSuspenserPrefab: {fileID: 3964069662587948830, guid: 6c5a9241c4db3f6409ede966aa3d3521,
     type: 3}
-  _meniGameEnderOrRestarterPrefab: {fileID: 7668033031834818259, guid: ba3831ef017c32c4ba931e642655ed41,
+  gameRestareterPrefab: {fileID: 7668033031834818259, guid: ba3831ef017c32c4ba931e642655ed41,
     type: 3}
-  _clipRun: {fileID: 8300000, guid: 0cd437008aa81ff4baa5498d74897299, type: 3}
-  _clipLoose: {fileID: 8300000, guid: 08f13c85fa84fca44a2a0f0414c3765e, type: 3}
-  _clipWinner: {fileID: 8300000, guid: 16734b6baf6438b43b9fa3d5d6209ae1, type: 3}
-  _environmentSound: {fileID: 1003489726}
-  _backgroundMusic: {fileID: 1003489725}
+  gameRun: {fileID: 8300000, guid: 0cd437008aa81ff4baa5498d74897299, type: 3}
+  gameLosing: {fileID: 8300000, guid: 08f13c85fa84fca44a2a0f0414c3765e, type: 3}
+  gameWinner: {fileID: 8300000, guid: 16734b6baf6438b43b9fa3d5d6209ae1, type: 3}
+  audioNotification: {fileID: 1003489725}
+  backgroundMusic: {fileID: 1003489726}
 --- !u!82 &1003489725
 AudioSource:
   m_ObjectHideFlags: 0

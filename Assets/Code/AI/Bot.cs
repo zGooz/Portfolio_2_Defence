@@ -7,35 +7,35 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
-    private GameObject _player;
-    private float _speed = 6.0f;
-    private Vector3 _direction;
-    private Camera _camera;
-    private Player _playerComponent;
+    private GameObject playerObject;
+    private float speed = 6.0f;
+    private Vector3 direction;
+    private Camera cameraObject;
+    private Player player;
 
-    Vector3 _selfPos;
-    Vector3 _targetPos;
+    Vector3 selfPosition;
+    Vector3 targetPosition;
 
     private void Start()
     {
-        _camera = FindObjectOfType<Camera>();
+        cameraObject = FindObjectOfType<Camera>();
 
-        _player = GameObject.Find("Player");
-        _playerComponent = _player.GetComponent<Player>();
+        playerObject = GameObject.Find("Player");
+        player = playerObject.GetComponent<Player>();
 
-        _selfPos = transform.position;
-        _targetPos = _player.transform.position;
+        selfPosition = transform.position;
+        targetPosition = playerObject.transform.position;
+        selfPosition = cameraObject.ScreenToWorldPoint(selfPosition);
+        targetPosition = cameraObject.ScreenToWorldPoint(targetPosition);
 
-        _selfPos = _camera.ScreenToWorldPoint(_selfPos);
-        _targetPos = _camera.ScreenToWorldPoint(_targetPos);
-        _direction = _targetPos - _selfPos;
+        direction = targetPosition - selfPosition;
     }
 
     private void Update()
     {
-        if (_playerComponent.State != Player.DEAD)
+        if (IsPlayerNotDead())
         {
-            this.transform.Translate(_direction * _speed * Time.deltaTime, Space.World);
+            MoveToPlayer();
         }
     }
 
@@ -43,11 +43,33 @@ public class Bot : MonoBehaviour
     {
         Destroy(this.gameObject);
 
-        GameObject obj = collision.gameObject;
+        GameObject other = collision.gameObject;
 
-        if (obj.TryGetComponent<Player>(out Player p))
+        if (IsPlayer(other))
         {
-            _playerComponent.Lives -= 1;
+            SetDamege();
         }
+    }
+
+    private bool IsPlayerNotDead()
+    {
+        return player.State != Player.DEAD;
+    }
+
+    private void MoveToPlayer()
+    {
+        Vector3 translation = direction * speed * Time.deltaTime;
+
+        this.transform.Translate(translation, Space.World);
+    }
+
+    private bool IsPlayer(GameObject instance)
+    {
+        return instance.TryGetComponent<Player>(out Player p);
+    }
+
+    private void SetDamege()
+    {
+        player.Lives -= 1;
     }
 }

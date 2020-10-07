@@ -5,28 +5,28 @@ using UnityEngine.Events;
 
 public class GameResume : MonoBehaviour
 {
-    [SerializeField] GameObject _buttonResumer;
+    [SerializeField] GameObject buttonGameResume;
 
-    private ButtonClick _clickToRestartButton;
+    private ButtonClick clickToResumeButton;
 
     public event UnityAction ResumeGame;
 
     private void Awake()
     {
-        _clickToRestartButton = _buttonResumer.GetComponent<ButtonClick>();
+        clickToResumeButton = buttonGameResume.GetComponent<ButtonClick>();
     }
 
     private void OnEnable()
     {
-        _clickToRestartButton.Click += OnGameResume;
+        clickToResumeButton.Click += OnResumeGame;
     }
 
     private void OnDisable()
     {
-        _clickToRestartButton.Click -= OnGameResume;
+        clickToResumeButton.Click -= OnResumeGame;
     }
 
-    private void OnGameResume()
+    private void OnResumeGame()
     {
         ResumeGame?.Invoke();
     }
