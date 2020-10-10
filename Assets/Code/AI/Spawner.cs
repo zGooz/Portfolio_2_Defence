@@ -83,7 +83,7 @@ public class Spawner : MonoBehaviour
         float y = statr.y + Mathf.Sin(angle) * player.Radius;
 
         Vector3 finish = new Vector3(0, 0, 0);
-        finish.Set(x, y, -10);
+        finish.Set(x, y, 0);
 
         return finish;
     }

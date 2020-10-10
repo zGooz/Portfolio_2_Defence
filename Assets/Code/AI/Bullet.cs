@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 
 public class Bullet : MonoBehaviour
@@ -12,9 +12,10 @@ public class Bullet : MonoBehaviour
     private Camera cameraObject;
     private Vector3 mouseScreenPosition;
     private Vector3 mouseWorldPosition;
-    private Vector3 direction;
+    private Vector3 force;
+    private Rigidbody2D body;
 
-    public float Speed { get; } = 7.0f;
+    public float Speed { get; } = 22.0f;
 
     private void Awake()
     {
@@ -22,10 +23,14 @@ public class Bullet : MonoBehaviour
 
         mouseScreenPosition = Input.mousePosition;
         mouseWorldPosition = cameraObject.ScreenToWorldPoint(mouseScreenPosition);
+
+        this.transform.LookAt(new Vector3(0, 0, mouseWorldPosition.z), mouseWorldPosition);
+
         mouseWorldPosition.Set(mouseWorldPosition.x, mouseWorldPosition.y, 0);
         mouseWorldPosition.Normalize();
 
-        direction = mouseWorldPosition * Speed * Time.deltaTime;
+        force = mouseWorldPosition * Speed * Time.deltaTime;
+        body = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -33,24 +38,8 @@ public class Bullet : MonoBehaviour
         Move();
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        GameObject other = collision.gameObject;
-
-        if (IsBot(other))
-        {
-            Destroy(other);
-            Destroy(this.gameObject);
-        }
-    }
-
     private void Move()
     {
-        this.transform.Translate(direction);
-    }
-
-    private bool IsBot(GameObject instance)
-    {
-        return instance.TryGetComponent<Bot>(out Bot b);
+        body.AddForce(force, ForceMode2D.Impulse);
     }
 }

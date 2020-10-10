@@ -10,6 +10,7 @@ public class Game : MonoBehaviour
 {
     [SerializeField] private Canvas _canvas;
     [SerializeField] private GameObject playerObject;
+    [SerializeField] private GameObject liveBoxObject;
     [SerializeField] private GameObject respawner;
 
     [SerializeField] private GameObject gameStarterPrefab;
@@ -37,8 +38,11 @@ public class Game : MonoBehaviour
 
     private Spawner respawn;
     private Player player;
+    private LifeBox liveBox;
 
     public event UnityAction GameStart;
+    public event UnityAction YouWinner;
+    public event UnityAction YouLouse;
 
     public const int GAME = 0;
     public const int MENU = 1;
@@ -60,25 +64,26 @@ public class Game : MonoBehaviour
         respawn = respawner.GetComponent<Spawner>();
         audioNotification = GetComponent<AudioSource>();
         player = playerObject.GetComponent<Player>();
+        liveBox = liveBoxObject.GetComponent<LifeBox>();
     }
 
     private void OnEnable()
     {
-        scriptGameStart.StartGame += OnGameRun;
-        scriptGameStart.ExitGame += OnGameDone;
+        scriptGameStart.StartGame += OnStartGame;
+        scriptGameStart.ExitGame += OnExitGame;
         respawn.Winner += OnWinnder;
-        player.Dead += OnLoose;
+        liveBox.Dead += OnLoose;
     }
 
     private void OnDisable()
     {
         respawn.Winner -= OnWinnder;
-        player.Dead -= OnLoose;
+        liveBox.Dead -= OnLoose;
 
         if (scriptGameEnd is GameRestartOrEnd)
         {
             scriptGameEnd.RestartGame -= OnGameRestart;
-            scriptGameEnd.ExitGame -= OnGameDone;
+            scriptGameEnd.ExitGame -= OnExitGame;
         }
 
         if (scriptGamePause is GameResume)
@@ -115,17 +120,28 @@ public class Game : MonoBehaviour
 
     private void OnWinnder()
     {
-        GameState = WINNER;
+        if (IsNotBeforeLosed())
+        {
+            GameState = WINNER;
+            OnYouWinner();
+        }
+
+        OnYouWinner();
 
         createMenuBox(ref gameRestarter, ref gameRestareterPrefab, ref scriptGameEnd);
 
         scriptGameEnd.RestartGame += OnGameRestart;
-        scriptGameEnd.ExitGame += OnGameDone;
+        scriptGameEnd.ExitGame += OnExitGame;
 
         ChangeAndRunSound(audioNotification, gameWinner);
     }
 
-    private void OnGameRun()
+    private bool IsNotBeforeLosed()
+    {
+        return GameState != LOSE;
+    }
+
+    private void OnStartGame()
     {
         if (GameState == MENU) 
         { 
@@ -134,8 +150,8 @@ public class Game : MonoBehaviour
 
         GameState = GAME;
 
-        scriptGameStart.StartGame -= OnGameRun;
-        scriptGameStart.ExitGame -= OnGameDone;
+        scriptGameStart.StartGame -= OnStartGame;
+        scriptGameStart.ExitGame -= OnExitGame;
 
         Destroy(gameStarter);
 
@@ -149,23 +165,34 @@ public class Game : MonoBehaviour
 
         GameState = MENU;
 
-        OnGameRun();
+        OnStartGame();
     }
 
     private void OnLoose()
     {
+        GameState = LOSE;
+
         // create Ender_Or_Restarter menu-box
         OnWinnder(); 
-
-        GameState = LOSE;
+        OnYouLouse();
 
         ChangeAndRunSound(audioNotification, gameLosing);
     }
 
-    private void OnGameDone()
+    private void OnExitGame()
     {
         Debug.Log("Application.Quit();");
         Application.Quit();
+    }
+
+    private void OnYouWinner()
+    {
+        YouWinner?.Invoke();
+    }
+
+    private void OnYouLouse()
+    {
+        YouLouse?.Invoke();
     }
 
     private void ChangeAndRunSound(AudioSource source, AudioClip clip)

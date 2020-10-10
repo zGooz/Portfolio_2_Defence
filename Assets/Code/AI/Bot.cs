@@ -4,72 +4,80 @@ using UnityEngine;
 
 [RequireComponent(typeof(CircleCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 
 public class Bot : MonoBehaviour
 {
-    private GameObject playerObject;
-    private float speed = 6.0f;
-    private Vector3 direction;
+    private GameObject player;
     private Camera cameraObject;
-    private Player player;
+    private Rigidbody2D body;
 
-    Vector3 selfPosition;
-    Vector3 targetPosition;
+    private float speed = 2.4f;
+    private Vector3 direction;
+    private Vector3 force;
 
     private void Start()
     {
         cameraObject = FindObjectOfType<Camera>();
-
-        playerObject = GameObject.Find("Player");
-        player = playerObject.GetComponent<Player>();
-
-        selfPosition = transform.position;
-        targetPosition = playerObject.transform.position;
-        selfPosition = cameraObject.ScreenToWorldPoint(selfPosition);
-        targetPosition = cameraObject.ScreenToWorldPoint(targetPosition);
-
-        direction = targetPosition - selfPosition;
+        body = GetComponent<Rigidbody2D>();
+        player = GameObject.Find("Player");
+        direction = GetDirectionToMove();
+        force = GetForce(direction);
     }
 
     private void Update()
     {
-        if (IsPlayerNotDead())
-        {
-            MoveToPlayer();
-        }
+        MoveToPlayer();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Destroy(this.gameObject);
-
         GameObject other = collision.gameObject;
 
-        if (IsPlayer(other))
+        if (IsBot(other))
         {
-            SetDamege();
+            return;
         }
+
+        if (IsBullet(other))
+        {
+            Destroy(other);
+        }
+
+        Destroy(this.gameObject);
     }
 
-    private bool IsPlayerNotDead()
+    private bool IsBot(GameObject instance)
     {
-        return player.State != Player.DEAD;
+        return instance.TryGetComponent<Bot>(out Bot b);
     }
 
     private void MoveToPlayer()
     {
-        Vector3 translation = direction * speed * Time.deltaTime;
-
-        this.transform.Translate(translation, Space.World);
+        body.AddForce(force, ForceMode2D.Impulse);
     }
 
-    private bool IsPlayer(GameObject instance)
+    private bool IsBullet(GameObject instance)
     {
-        return instance.TryGetComponent<Player>(out Player p);
+        return instance.TryGetComponent<Bullet>(out Bullet b);
     }
 
-    private void SetDamege()
+    private Vector3 GetDirectionToMove()
     {
-        player.Lives -= 1;
+        Vector3 selfPosition = transform.position;
+        Vector3 targetPosition = player.transform.position;
+
+        selfPosition = cameraObject.ScreenToWorldPoint(selfPosition);
+        targetPosition = cameraObject.ScreenToWorldPoint(targetPosition);
+
+        Vector3 direction = targetPosition - selfPosition;
+        direction.Set(direction.x, direction.y, 0);
+
+        return direction;
+    }
+
+    private Vector3 GetForce(Vector3 direction)
+    {
+        return direction * speed * Time.deltaTime;
     }
 }

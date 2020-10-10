@@ -9,28 +9,22 @@ using UnityEngine.Events;
 public class Player : MonoBehaviour
 {
     [SerializeField] private GameObject main;
-
+ 
     public const int LIVE = 0;
     public const int DEAD = 1;
     public int State { get; set; } = LIVE;
-    public float Radius { get; } = 40.0f;
+    public float Radius { get; } = 18.0f;
 
-    public int _liveAmount = 5;
+    public int liveAmount = 5;
     private Game game;
 
     public Game ManagerStateData => game;
 
-    public event UnityAction Dead;
     public event UnityAction HasDamage;
 
     private void Awake()
     {
         game = main.GetComponent<Game>();
-    }
-
-    public void OnDead()
-    {
-        Dead?.Invoke();
     }
 
     public void OnHasDamage() 
@@ -44,18 +38,11 @@ public class Player : MonoBehaviour
         {
             if (IsLive())
             {
-                _liveAmount = value;
-
-                if (IsCanNotLive())
-                {
-                    State = DEAD;
-                    OnDead();
-                }
-
+                liveAmount = value;
                 OnHasDamage();
             }
         }
-        get => _liveAmount;
+        get => liveAmount;
     }
 
     private bool IsLive()
@@ -63,8 +50,26 @@ public class Player : MonoBehaviour
         return State != DEAD;
     }
 
-    private bool IsCanNotLive()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        return _liveAmount == 0;
+        GameObject other = collision.gameObject;
+
+        if (IsBot(other))
+        {
+            SetDamage();
+        }
+    }
+
+    private void SetDamage()
+    {
+        if (IsLive())
+        {
+            Lives -= 1;
+        }
+    }
+
+    private bool IsBot(GameObject instance)
+    {
+        return instance.TryGetComponent<Bot>(out Bot b);
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public class LifeBox : MonoBehaviour
@@ -9,7 +10,9 @@ public class LifeBox : MonoBehaviour
 
     private int liveAmount;
     private Player player;
-    
+
+    public event UnityAction Dead;
+
     private void Awake()
     {
         player = playerObject.GetComponent<Player>();
@@ -28,16 +31,24 @@ public class LifeBox : MonoBehaviour
 
     private void OnPanchToPlayer()
     {
-        if (IsPlayerLive())
+        int lastIndex = liveAmount - 1;
+        Destroy(lives[lastIndex]);
+        liveAmount -= 1;
+
+        if (IsLiveNotExists())
         {
-            int lastIndex = liveAmount - 1;
-            Destroy(lives[lastIndex]);
-            liveAmount -= 1;
+            player.State = Player.DEAD;
+            OnDead();
         }
     }
 
-    private bool IsPlayerLive()
+    public void OnDead()
     {
-        return liveAmount > 0;
+        Dead?.Invoke();
+    }
+
+    private bool IsLiveNotExists()
+    {
+        return liveAmount == 0;
     }
 }

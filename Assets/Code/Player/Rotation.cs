@@ -41,6 +41,6 @@ public class Rotation : MonoBehaviour
         Vector3 screenMouse = Input.mousePosition;
         Vector3 worldMouse = cameraObject.ScreenToWorldPoint(screenMouse);
 
-        transform.LookAt(new Vector3(0, 0, 0), worldMouse);
+        this.transform.LookAt(new Vector3(0, 0, worldMouse.z), worldMouse);
     }
 }
