@@ -10,8 +10,6 @@ public class Bullet : MonoBehaviour
     // [SerializeField] private Camera _camera; // ??? Not set field. ???
 
     private Camera cameraObject;
-    private Vector3 mouseScreenPosition;
-    private Vector3 mouseWorldPosition;
     private Vector3 force;
     private Rigidbody2D body;
 
@@ -20,17 +18,11 @@ public class Bullet : MonoBehaviour
     private void Awake()
     {
         cameraObject = FindObjectOfType<Camera>();
-
-        mouseScreenPosition = Input.mousePosition;
-        mouseWorldPosition = cameraObject.ScreenToWorldPoint(mouseScreenPosition);
-
-        this.transform.LookAt(new Vector3(0, 0, mouseWorldPosition.z), mouseWorldPosition);
-
-        mouseWorldPosition.Set(mouseWorldPosition.x, mouseWorldPosition.y, 0);
-        mouseWorldPosition.Normalize();
-
-        force = mouseWorldPosition * Speed * Time.deltaTime;
         body = GetComponent<Rigidbody2D>();
+
+        Vector3 direction = GetDirection();
+
+        force = GetForce(direction);
     }
 
     private void Update()
@@ -41,5 +33,23 @@ public class Bullet : MonoBehaviour
     private void Move()
     {
         body.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    private Vector3 GetDirection()
+    {
+        Vector3 mouseScreenPosition = Input.mousePosition;
+        Vector3 mouseWorldPosition = cameraObject.ScreenToWorldPoint(mouseScreenPosition);
+
+        this.transform.LookAt(new Vector3(0, 0, mouseWorldPosition.z), mouseWorldPosition);
+
+        mouseWorldPosition.Set(mouseWorldPosition.x, mouseWorldPosition.y, 0);
+        mouseWorldPosition.Normalize();
+
+        return mouseWorldPosition;
+    }
+
+    private Vector3 GetForce(Vector3 direction)
+    {
+        return direction * Speed * Time.deltaTime;
     }
 }

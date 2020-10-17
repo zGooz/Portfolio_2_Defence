@@ -31,15 +31,21 @@ public class LifeBox : MonoBehaviour
 
     private void OnPanchToPlayer()
     {
-        int lastIndex = liveAmount - 1;
-        Destroy(lives[lastIndex]);
-        liveAmount -= 1;
+        TakeOneLive();
 
         if (IsLiveNotExists())
         {
             player.State = Player.DEAD;
             OnDead();
         }
+    }
+
+    private void TakeOneLive()
+    {
+        int lastIndex = liveAmount - 1;
+
+        Destroy(lives[lastIndex]);
+        liveAmount -= 1;
     }
 
     public void OnDead()
