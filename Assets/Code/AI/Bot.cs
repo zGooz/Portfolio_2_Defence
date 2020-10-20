@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
+    [SerializeField] GameObject bangPrefab;
+
     private GameObject player;
     private Camera cameraObject;
     private Rigidbody2D body;
@@ -41,6 +43,7 @@ public class Bot : MonoBehaviour
 
         if (IsBullet(other))
         {
+            CreateBang();
             Destroy(other);
         }
 
@@ -59,7 +62,14 @@ public class Bot : MonoBehaviour
 
     private bool IsBullet(GameObject instance)
     {
-        return instance.TryGetComponent<Bullet>(out Bullet b);
+        return instance.TryGetComponent<Rocket>(out Rocket b);
+    }
+
+    private void CreateBang()
+    {
+        GameObject bang = Instantiate(bangPrefab, this.transform.position, Quaternion.identity);
+
+        Destroy(bang, 1.0f);
     }
 
     private Vector3 GetDirectionToMove()

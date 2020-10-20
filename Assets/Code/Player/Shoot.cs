@@ -9,7 +9,7 @@ public class Shoot : MonoBehaviour
     private const int TIME_BETWEEN_SHOTS = 30;
 
     private Camera cameraObject;
-    private Bullet bullet;
+    private Rocket bullet;
     private Player player;
     private float createAreaRadius = 3.2f;
     private int reload = TIME_BETWEEN_SHOTS;
@@ -17,7 +17,7 @@ public class Shoot : MonoBehaviour
     private void Awake()
     {
         cameraObject = FindObjectOfType<Camera>();
-        bullet = _bulletPrefab.GetComponent<Bullet>();
+        bullet = _bulletPrefab.GetComponent<Rocket>();
         player = GetComponent<Player>();
     }
     

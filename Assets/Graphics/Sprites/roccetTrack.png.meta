@@ -14,6 +14,18 @@ TextureImporter:
   - first:
       213: -1730093305339884829
     second: roccetTrack_3
+  - first:
+      213: 3732596960466070057
+    second: roccetTrack_0
+  - first:
+      213: 7962572146558766914
+    second: roccetTrack_1
+  - first:
+      213: 793084711419460318
+    second: roccetTrack_2
+  - first:
+      213: 4029257657232433296
+    second: roccetTrack_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -114,10 +126,10 @@ TextureImporter:
       name: roccetTrack_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 0
-        width: 26
-        height: 51
+        x: 0
+        y: 1
+        width: 32
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,8 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36cbe0598672e32c0800000000000000
-      internalID: -4450076051664618397
+      spriteID: 92a684ec829dcc330800000000000000
+      internalID: 3732596960466070057
       vertices: []
       indices: 
       edges: []
@@ -135,10 +147,10 @@ TextureImporter:
       name: roccetTrack_1
       rect:
         serializedVersion: 2
-        x: 36
-        y: 3
-        width: 26
-        height: 48
+        x: 32
+        y: 1
+        width: 32
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,8 +158,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61b4eb6ab8ac8cc60800000000000000
-      internalID: 7838737852585102102
+      spriteID: 24f0e060e2db08e60800000000000000
+      internalID: 7962572146558766914
       vertices: []
       indices: 
       edges: []
@@ -156,10 +168,10 @@ TextureImporter:
       name: roccetTrack_2
       rect:
         serializedVersion: 2
-        x: 68
-        y: 6
-        width: 21
-        height: 45
+        x: 64
+        y: 1
+        width: 32
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -167,8 +179,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3db9166568626b350800000000000000
-      internalID: 6032051109326068691
+      spriteID: eda33f4d75a910b00800000000000000
+      internalID: 793084711419460318
       vertices: []
       indices: 
       edges: []
@@ -177,10 +189,10 @@ TextureImporter:
       name: roccetTrack_3
       rect:
         serializedVersion: 2
-        x: 98
-        y: 10
-        width: 28
-        height: 41
+        x: 96
+        y: 1
+        width: 32
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -188,8 +200,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ea4fe22e497df7e0800000000000000
-      internalID: -1730093305339884829
+      spriteID: 090acd7cd7ccae730800000000000000
+      internalID: 4029257657232433296
       vertices: []
       indices: 
       edges: []
