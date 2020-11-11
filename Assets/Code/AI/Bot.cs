@@ -8,40 +8,34 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
-    [SerializeField] GameObject bangPrefab;
-
+    [SerializeField] 
+    private GameObject bangPrefab;
     private GameObject player;
-    private Camera cameraObject;
+    private Camera viewer;
     private Rigidbody2D body;
-
     private float speed = 2.4f;
     private Vector3 direction;
     private Vector3 force;
 
     private void Start()
     {
-        cameraObject = FindObjectOfType<Camera>();
+        viewer = FindObjectOfType<Camera>();
         body = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
         direction = GetDirectionToMove();
         force = GetForce(direction);
     }
 
-    private void Update()
-    {
-        MoveToPlayer();
-    }
+    private void Update() { MoveToPlayer(); }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
+        bool isBot = other.TryGetComponent<Bot>(out Bot b);
+        if (isBot) { return; }
+        bool isBullet = other.TryGetComponent<Rocket>(out Rocket r);
 
-        if (IsBot(other))
-        {
-            return;
-        }
-
-        if (IsBullet(other))
+        if (isBullet)
         {
             CreateBang();
             Destroy(other);
@@ -50,25 +44,12 @@ public class Bot : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    private bool IsBot(GameObject instance)
-    {
-        return instance.TryGetComponent<Bot>(out Bot b);
-    }
-
-    private void MoveToPlayer()
-    {
-        body.AddForce(force, ForceMode2D.Impulse);
-    }
-
-    private bool IsBullet(GameObject instance)
-    {
-        return instance.TryGetComponent<Rocket>(out Rocket b);
-    }
+    private void MoveToPlayer() { body.AddForce(force, ForceMode2D.Impulse); }
 
     private void CreateBang()
     {
-        GameObject bang = Instantiate(bangPrefab, this.transform.position, Quaternion.identity);
-
+        Vector3 vector = this.transform.position;
+        GameObject bang = Instantiate(bangPrefab, vector, Quaternion.identity);
         Destroy(bang, 1.0f);
     }
 
@@ -77,8 +58,8 @@ public class Bot : MonoBehaviour
         Vector3 selfPosition = transform.position;
         Vector3 targetPosition = player.transform.position;
 
-        selfPosition = cameraObject.ScreenToWorldPoint(selfPosition);
-        targetPosition = cameraObject.ScreenToWorldPoint(targetPosition);
+        selfPosition = viewer.ScreenToWorldPoint(selfPosition);
+        targetPosition = viewer.ScreenToWorldPoint(targetPosition);
 
         Vector3 direction = targetPosition - selfPosition;
         direction.Set(direction.x, direction.y, 0);

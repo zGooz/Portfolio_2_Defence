@@ -5,40 +5,34 @@ using UnityEngine.Events;
 
 public class GameStartOrEnd : MonoBehaviour
 {
-    [SerializeField] GameObject buttonGameStart;
-    [SerializeField] GameObject buttonGameExit;
+    [SerializeField] private GameObject buttonStart;
+    [SerializeField] private GameObject buttonExit;
 
-    private ButtonClick clickToStartButton;
-    private ButtonClick clickToExitButton;
+    private ButtonClick componentStart;
+    private ButtonClick componentExit;
 
     public event UnityAction StartGame;
     public event UnityAction ExitGame;
 
     private void Awake()
     {
-        clickToStartButton = buttonGameStart.GetComponent<ButtonClick>();
-        clickToExitButton = buttonGameExit.GetComponent<ButtonClick>();
+        componentStart = buttonStart.GetComponent<ButtonClick>();
+        componentExit = buttonExit.GetComponent<ButtonClick>();
     }
 
     private void OnEnable()
     {
-        clickToStartButton.Click += OnStartGame;
-        clickToExitButton.Click += OnExitGame;
+        componentStart.Click += OnStartGame;
+        componentExit.Click += OnExitGame;
     }
 
     private void OnDisable()
     {
-        clickToStartButton.Click -= OnStartGame;
-        clickToExitButton.Click -= OnExitGame;
+        componentStart.Click -= OnStartGame;
+        componentExit.Click -= OnExitGame;
     }
 
-    private void OnStartGame()
-    {
-        StartGame?.Invoke();
-    }
+    private void OnStartGame() { StartGame?.Invoke(); }
 
-    private void OnExitGame()
-    {
-        ExitGame?.Invoke();
-    }
+    private void OnExitGame() { ExitGame?.Invoke(); }
 }

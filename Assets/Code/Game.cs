@@ -8,37 +8,32 @@ using UnityEngine.Events;
 
 public class Game : MonoBehaviour
 {
-    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject playerObject;
-    [SerializeField] private GameObject liveBoxObject;
+    [SerializeField] private GameObject liveBox;
     [SerializeField] private GameObject respawner;
-
-    [SerializeField] private GameObject gameStarterPrefab;
-    [SerializeField] private GameObject gameSuspenserPrefab;
-    [SerializeField] private GameObject gameRestareterPrefab;
-
-    [SerializeField] private AudioClip gameRun;
-    [SerializeField] private AudioClip gameLosing;
-    [SerializeField] private AudioClip gameWinner;
-
+    [SerializeField] private GameObject PrefabStarter;
+    [SerializeField] private GameObject PrefabSuspense;
+    [SerializeField] private GameObject PrefabRestaret;
+    [SerializeField] private AudioClip soundRun;
+    [SerializeField] private AudioClip soundLosing;
+    [SerializeField] private AudioClip soundWinner;
     [SerializeField] private AudioSource audioNotification;
     [SerializeField] private AudioSource backgroundMusic;
 
-    private GameObject gameStarter;
-    private GameObject gameSuspenser;
-    private GameObject gameRestarter;
-
-    public GameObject GameStarter => gameStarter;
-    public GameObject GameResumer => gameSuspenser;
-    public GameObject GameEnderOrRestarter => gameRestarter;
-
-    private GameStartOrEnd scriptGameStart;
-    private GameRestartOrEnd scriptGameEnd;
-    private GameResume scriptGamePause;
-
+    private GameObject starter;
+    private GameObject suspenser;
+    private GameObject restarter;
+    private GameStartOrEnd componentGameStart;
+    private GameRestartOrEnd componentGameEnd;
+    private GameResume componentGamePause;
     private Spawner respawn;
     private Player player;
-    private LifeBox liveBox;
+    private LifeBox lives;
+
+    public GameObject GameStarter => starter;
+    public GameObject GameResumer => suspenser;
+    public GameObject GameEnderOrRestarter => restarter;
 
     public event UnityAction GameStart;
     public event UnityAction YouWinner;
@@ -52,44 +47,13 @@ public class Game : MonoBehaviour
 
     public int GameState { private set; get; } = MENU;
 
-    public void OnGameStart() 
-    { 
-        GameStart?.Invoke();
-    }
-
     private void Awake()
     {
-        createMenuBox(ref gameStarter, ref gameStarterPrefab, ref scriptGameStart);
-
+        createMenuBox(ref starter, ref PrefabStarter, ref componentGameStart);
         respawn = respawner.GetComponent<Spawner>();
         audioNotification = GetComponent<AudioSource>();
         player = playerObject.GetComponent<Player>();
-        liveBox = liveBoxObject.GetComponent<LifeBox>();
-    }
-
-    private void OnEnable()
-    {
-        scriptGameStart.StartGame += OnStartGame;
-        scriptGameStart.ExitGame += OnExitGame;
-        respawn.Winner += OnWinnder;
-        liveBox.Dead += OnLoose;
-    }
-
-    private void OnDisable()
-    {
-        respawn.Winner -= OnWinnder;
-        liveBox.Dead -= OnLoose;
-
-        if (scriptGameEnd is GameRestartOrEnd)
-        {
-            scriptGameEnd.RestartGame -= OnGameRestart;
-            scriptGameEnd.ExitGame -= OnExitGame;
-        }
-
-        if (scriptGamePause is GameResume)
-        {
-            scriptGamePause.ResumeGame -= OnGameResume;
-        }
+        lives = liveBox.GetComponent<LifeBox>();
     }
 
     private void Update()
@@ -99,84 +63,88 @@ public class Game : MonoBehaviour
             if (GameState == GAME)
             {
                 GameState = PAUSE;
-
-                createMenuBox(ref gameSuspenser, ref gameSuspenserPrefab, ref scriptGamePause);
-
-                scriptGamePause.ResumeGame += OnGameResume;
+                createMenuBox(ref suspenser, ref PrefabSuspense, ref componentGamePause);
+                componentGamePause.ResumeGame += OnGameResume;
             }
         }
     }
 
-    private void OnGameResume()
+    private void OnEnable()
     {
-        if (GameState == MENU)
+        componentGameStart.StartGame += OnStartGame;
+        componentGameStart.ExitGame += OnExitGame;
+        respawn.Winner += OnWinnder;
+        lives.Dead += OnLoose;
+    }
+
+    private void OnDisable()
+    {
+        respawn.Winner -= OnWinnder;
+        lives.Dead -= OnLoose;
+
+        if (componentGameEnd is GameRestartOrEnd)
         {
-            OnGameStart();
+            componentGameEnd.RestartGame -= OnGameRestart;
+            componentGameEnd.ExitGame -= OnExitGame;
         }
 
+        if (componentGamePause is GameResume)
+        {
+            componentGamePause.ResumeGame -= OnGameResume;
+        }
+    }
+
+    public void OnGameStart() { GameStart?.Invoke(); }
+
+    private void OnGameResume()
+    {
+        if (GameState == MENU) { OnGameStart(); }
         GameState = GAME;
-        Destroy(gameSuspenser);
+        Destroy(suspenser);
     }
 
     private void OnWinnder()
     {
-        if (IsNotBeforeLosed())
+        bool isBeforeLosed = GameState != LOSE;
+
+        if (! isBeforeLosed)
         {
             GameState = WINNER;
             OnYouWinner();
         }
 
         OnYouWinner();
-
-        createMenuBox(ref gameRestarter, ref gameRestareterPrefab, ref scriptGameEnd);
-
-        scriptGameEnd.RestartGame += OnGameRestart;
-        scriptGameEnd.ExitGame += OnExitGame;
-
-        ChangeAndRunSound(audioNotification, gameWinner);
-    }
-
-    private bool IsNotBeforeLosed()
-    {
-        return GameState != LOSE;
+        createMenuBox(ref restarter, ref PrefabRestaret, ref componentGameEnd);
+        componentGameEnd.RestartGame += OnGameRestart;
+        componentGameEnd.ExitGame += OnExitGame;
+        ChangeAndRunSound(audioNotification, soundWinner);
     }
 
     private void OnStartGame()
     {
-        if (GameState == MENU) 
-        { 
-            OnGameStart(); 
-        }
-
+        if (GameState == MENU) { OnGameStart(); }
         GameState = GAME;
-
-        scriptGameStart.StartGame -= OnStartGame;
-        scriptGameStart.ExitGame -= OnExitGame;
-
-        Destroy(gameStarter);
-
-        ChangeAndRunSound(audioNotification, gameRun);
+        componentGameStart.StartGame -= OnStartGame;
+        componentGameStart.ExitGame -= OnExitGame;
+        Destroy(starter);
+        ChangeAndRunSound(audioNotification, soundRun);
     }
 
     private void OnGameRestart()
     {
         string scene = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(scene, LoadSceneMode.Single);
-
         GameState = MENU;
-
         OnStartGame();
     }
 
     private void OnLoose()
     {
         GameState = LOSE;
-
         // create Ender_Or_Restarter menu-box
         OnWinnder(); 
         OnYouLouse();
-
-        ChangeAndRunSound(audioNotification, gameLosing);
+        ChangeAndRunSound(audioNotification, soundLosing);
     }
 
     private void OnExitGame()
@@ -185,15 +153,8 @@ public class Game : MonoBehaviour
         Application.Quit();
     }
 
-    private void OnYouWinner()
-    {
-        YouWinner?.Invoke();
-    }
-
-    private void OnYouLouse()
-    {
-        YouLouse?.Invoke();
-    }
+    private void OnYouWinner() { YouWinner?.Invoke(); }
+    private void OnYouLouse() { YouLouse?.Invoke(); }
 
     private void ChangeAndRunSound(AudioSource source, AudioClip clip)
     {
@@ -203,7 +164,7 @@ public class Game : MonoBehaviour
 
     private void createMenuBox<T>(ref GameObject box, ref GameObject prefab, ref T component)
     {
-        box = Instantiate(prefab, _canvas.transform);
+        box = Instantiate(prefab, canvas.transform);
         component = box.GetComponent<T>();
     }
 }

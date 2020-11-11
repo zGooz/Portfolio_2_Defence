@@ -12,19 +12,12 @@ public class Spawner : MonoBehaviour
 
     private Game game;
     private Player player;
-
-    private int respownCounter = 1;
-    private int currentWave = 1;
-    private float reloadBetweenRespawn = 5.0f;
-
+    private int botAmount = 1;
+    private int wave = 1;
+    private float reload = 5.0f;
     private const int LAST_WAVE = 10;
 
     public event UnityAction Winner;
-
-    public void OnWinner()
-    {
-        Winner?.Invoke();
-    }
 
     private void Awake()
     {
@@ -32,48 +25,42 @@ public class Spawner : MonoBehaviour
         player = playerObject.GetComponent<Player>();
     }
 
+    private void OnEnable() { game.GameStart += OnGameStart; }
+
+    private void OnDisable() { game.GameStart -= OnGameStart; }
+
     IEnumerator Spawn()
     {
-        if (IsPlayerDead()) 
-        { 
-            yield break; 
-        }
+        bool isPlayerDead = player.State == Player.DEAD;
+        if (isPlayerDead) { yield break; }
+        bool isLastWave = wave == LAST_WAVE;
 
-        if (IsLastWave())
+        if (isLastWave)
         {
             OnWinner();
             yield break;
         }
 
         MakeBots();
-
-        yield return new WaitForSeconds(reloadBetweenRespawn);
-
+        yield return new WaitForSeconds(reload);
         StartCoroutine(Spawn());
     }
 
-    private bool IsPlayerDead()
-    {
-        return player.State == Player.DEAD;
-    }
+    private void OnGameStart() { StartCoroutine(Spawn()); }
 
-    private bool IsLastWave()
-    {
-        return currentWave == LAST_WAVE;
-    }
+    public void OnWinner() { Winner?.Invoke(); }
 
     private void MakeBots()
     {
-        for (int i = 0; i < respownCounter; i++)
+        for (int i = 0; i < botAmount; i++)
         {
             float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
             Vector3 finish = GetRespawnPosition(angle);
-
             CreateBot(finish, angle);
         }
 
-        respownCounter += 1;
-        currentWave += 1;
+        botAmount += 1;
+        wave += 1;
     }
 
     private Vector3 GetRespawnPosition(float angle)
@@ -92,20 +79,5 @@ public class Spawner : MonoBehaviour
     {
         var instance = Instantiate(bot, finish, Quaternion.identity);
         instance.transform.Rotate(new Vector3(0, 0, angle * Mathf.Rad2Deg + 90));
-    }
-
-    private void OnEnable()
-    {
-        game.GameStart += OnGameStart;
-    }
-
-    private void OnDisable()
-    {
-        game.GameStart -= OnGameStart;
-    }
-
-    private void OnGameStart()
-    {
-        StartCoroutine(Spawn());
     }
 }

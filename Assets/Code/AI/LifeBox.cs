@@ -10,7 +10,6 @@ public class LifeBox : MonoBehaviour
 
     private int liveAmount;
     private Player player;
-
     public event UnityAction Dead;
 
     private void Awake()
@@ -19,21 +18,15 @@ public class LifeBox : MonoBehaviour
         liveAmount = player.Lives;
     }
 
-    private void OnEnable() 
-    {
-        player.HasDamage += OnPanchToPlayer;
-    }
-
-    private void OnDisable() 
-    {
-        player.HasDamage -= OnPanchToPlayer; 
-    }
+    private void OnEnable() { player.HasDamage += OnPanchToPlayer; }
+    private void OnDisable() { player.HasDamage -= OnPanchToPlayer; }
 
     private void OnPanchToPlayer()
     {
         TakeOneLive();
+        bool isDead = liveAmount == 0;
 
-        if (IsLiveNotExists())
+        if (isDead)
         {
             player.State = Player.DEAD;
             OnDead();
@@ -43,18 +36,9 @@ public class LifeBox : MonoBehaviour
     private void TakeOneLive()
     {
         int lastIndex = liveAmount - 1;
-
         Destroy(lives[lastIndex]);
         liveAmount -= 1;
     }
 
-    public void OnDead()
-    {
-        Dead?.Invoke();
-    }
-
-    private bool IsLiveNotExists()
-    {
-        return liveAmount == 0;
-    }
+    public void OnDead() { Dead?.Invoke(); }
 }

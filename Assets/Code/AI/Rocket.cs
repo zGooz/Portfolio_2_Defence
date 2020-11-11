@@ -10,8 +10,8 @@ public class Rocket : MonoBehaviour
 {
     // [SerializeField] private Camera _camera; // ??? Not set field. ???
 
-    [SerializeField] GameObject tracePrefab;
-
+    [SerializeField] 
+    private GameObject tracePrefab;
     private Camera cameraObject;
     private Vector3 force;
     private Rigidbody2D body;
@@ -25,32 +25,23 @@ public class Rocket : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         direction = GetDirection();
         force = GetForce(direction);
-
         StartCoroutine(CreateTrace());
     }
 
-    private void Update()
-    {
-        Move();
-    }
+    private void Update() { Move(); }
+
+    private void Move() { body.AddForce(force, ForceMode2D.Impulse); }
 
     IEnumerator CreateTrace()
     {
         yield return new WaitForSeconds(0.08f);
-
         CreateRocketTrace();
         StartCoroutine(CreateTrace());
-    }
-
-    private void Move()
-    {
-        body.AddForce(force, ForceMode2D.Impulse);
     }
 
     private void CreateRocketTrace()
     {
         var trace = Instantiate(tracePrefab, this.transform.position, Quaternion.identity);
-
         Destroy(trace, 1.0f);
     }
 

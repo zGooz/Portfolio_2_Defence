@@ -5,36 +5,29 @@ using UnityEngine.UI;
 
 public class Notice : MonoBehaviour
 {
-    [SerializeField] private GameObject mainObject;
-
-    private Game main;
+    [SerializeField] 
+    private GameObject main;
+    private Game game;
     private Text label;
 
     private void Awake()
     {
-        main = mainObject.GetComponent<Game>();
+        game = main.GetComponent<Game>();
         label = GetComponent<Text>();
     }
 
     private void OnEnable()
     {
-        main.YouWinner += OnYouWinner;
-        main.YouLouse += OnYouLouse;
+        game.YouWinner += OnYouWinner;
+        game.YouLouse += OnYouLouse;
     }
 
     private void OnDisable()
     {
-        main.YouWinner -= OnYouWinner;
-        main.YouLouse -= OnYouLouse;
+        game.YouWinner -= OnYouWinner;
+        game.YouLouse -= OnYouLouse;
     }
 
-    private void OnYouWinner()
-    {
-        label.text = "You winner!";
-    }
-
-    private void OnYouLouse()
-    {
-        label.text = "You louse!";
-    }
+    private void OnYouWinner() { label.text = "You winner!"; }
+    private void OnYouLouse() { label.text = "You louse!"; }
 }

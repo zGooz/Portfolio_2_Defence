@@ -8,29 +8,18 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject main;
- 
-    public const int LIVE = 0;
-    public const int DEAD = 1;
-    public int State { get; set; } = LIVE;
-    public float Radius { get; } = 18.0f;
-
-    public int liveAmount = 5;
+    [SerializeField] 
+    private GameObject main;
     private Game game;
 
+    public const int LIVE = 0;
+    public const int DEAD = 1;
+    public int liveAmount;
+
+    public int State { get; set; } = LIVE;
+    public float Radius { get; } = 18.0f;
     public Game ManagerStateData => game;
-
     public event UnityAction HasDamage;
-
-    private void Awake()
-    {
-        game = main.GetComponent<Game>();
-    }
-
-    public void OnHasDamage() 
-    { 
-        HasDamage?.Invoke();
-    }
 
     public int Lives
     {
@@ -45,31 +34,20 @@ public class Player : MonoBehaviour
         get => liveAmount;
     }
 
-    private bool IsLive()
+    private void Awake() 
     {
-        return State != DEAD;
+        game = main.GetComponent<Game>();
+        liveAmount = GameObject.FindGameObjectsWithTag("lives").Length;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-
-        if (IsBot(other))
-        {
-            SetDamage();
-        }
+        bool isBot = other.TryGetComponent<Bot>(out Bot b);
+        if (isBot) { SetDamage(); }
     }
 
-    private void SetDamage()
-    {
-        if (IsLive())
-        {
-            Lives -= 1;
-        }
-    }
-
-    private bool IsBot(GameObject instance)
-    {
-        return instance.TryGetComponent<Bot>(out Bot b);
-    }
+    public void OnHasDamage() { HasDamage?.Invoke(); }
+    private bool IsLive() { return State != DEAD; }
+    private void SetDamage() { if (IsLive()) { Lives -= 1; } }
 }
